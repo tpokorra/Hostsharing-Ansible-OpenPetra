@@ -1,0 +1,15 @@
+/home/pacs/{{pac}}/users/{{user}}/var/log/monoserver.log {
+   copytruncate
+   daily
+   rotate 7
+   compress
+   missingok
+}
+/home/pacs/{{pac}}/users/{{user}}/var/log/nginx-access.log {
+   copytruncate
+   daily
+   rotate 7
+   compress
+   missingok
+}
+

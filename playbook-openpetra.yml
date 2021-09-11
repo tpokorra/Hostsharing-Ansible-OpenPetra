@@ -4,10 +4,94 @@
     monoversion: 6.8.0.105
     ansible_python_interpreter: /usr/bin/python3
   tasks:
+
+  #################################
+  ## setup the user, the domain, the database
+  #################################
   - name: ensure user exists
     hsuser.js: name="{{pac}}-{{user}}" password="{{password}}" exists="true"
   - name: setup domain
     hsdomain.js: name="{{domain}}" owner="{{pac}}-{{user}}" exists="true"
+  - name: setup database
+    hsdatabase.js: name="{{pac}}_{{user}}" password="{{password}}" instance="mysql" exists="true"
+
+  #################################
+  ## create directories
+  #################################
+  - name: create directory var/tmp
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+      path: "/home/pacs/{{pac}}/users/{{user}}/var/tmp"
+      state: directory
+  - name: create directory var/log
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+      path: "/home/pacs/{{pac}}/users/{{user}}/var/log"
+      state: directory
+  - name: create directory var/run
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+      path: "/home/pacs/{{pac}}/users/{{user}}/var/run"
+      state: directory
+  - name: create directory etc/nginx.conf.d
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+      path: "/home/pacs/{{pac}}/users/{{user}}/etc/nginx.conf.d"
+      state: directory
+  - name: create directory bin
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+      path: "/home/pacs/{{pac}}/users/{{user}}/bin"
+      state: directory
+
+  #################################
+  ## upload files
+  #################################
+  - name: upload common.config
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/etc/common.config" src="templates/common.config" mode=0600
+  - name: upload fastcgi_params
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/etc/fastcgi_params" src="templates/fastcgi_params" mode=0600
+  - name: upload nginx.conf
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/etc/nginx.conf" src="templates/nginx.conf" mode=0600
+  - name: upload nginx start script
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/bin/start-nginx.sh" src="templates/start-nginx.sh" mode=0700
+  - name: upload nginx stop script
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/bin/stop-nginx.sh" src="templates/stop-nginx.sh" mode=0700
+  - name: upload openpetra start script
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/bin/start-openpetra.sh" src="templates/start-nginx.sh" mode=0700
+  - name: upload openpetra stop script
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/bin/stop-openpetra.sh" src="templates/stop-nginx.sh" mode=0700
+  - name: upload monit configuration
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/.monitrc" src="templates/monitrc" mode=0600
+  - name: upload logrotate configuration
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/.logrotate" src="templates/logrotate" mode=0600
+
+  #################################
+  ## install mono
+  #################################
   - name: install mono
     become: yes
     become_user: "{{pac}}-{{user}}"
@@ -22,4 +106,20 @@
     file:
       src: "/home/pacs/{{pac}}/users/{{user}}/mono-{{monoversion}}"
       dest: "/home/pacs/{{pac}}/users/{{user}}/mono"
-      state: link      
+      state: link
+  # TODO get the certificates: cert-sync --user /etc/ssl/certs/ca-certificates.crt
+  # TODO install the mono config file in the current user with a reference to libsodium
+
+  #################################
+  ## download OpenPetra
+  #################################
+  # TODO get the tarball
+  # TODO set symbolic link for libsodium
+
+
+# TODO: install instance
+# TODO: crontab for logrotate
+# TODO: crontab for monit
+# TODO: crontab for reminder
+# TODO: start openpetra, start nginx
+# TODO: start monit
