@@ -1,0 +1,25 @@
+---
+- hosts: openpetra
+  vars:
+    monoversion: 6.8.0.105
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+  - name: ensure user exists
+    hsuser.js: name="{{pac}}-{{user}}" password="{{password}}" exists="true"
+  - name: setup domain
+    hsdomain.js: name="{{domain}}" owner="{{pac}}-{{user}}" exists="true"
+  - name: install mono
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    ansible.builtin.unarchive:
+      creates: /home/pacs/{{pac}}/users/{{user}}/mono-{{monoversion}}
+      src: https://download.solidcharity.com/tarballs/tpokorra/mono/mono-{{monoversion}}.bin.debian10.tar.gz
+      remote_src: yes
+      dest: /home/pacs/{{pac}}/users/{{user}}
+  - name: create symbolic link for mono
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+      src: "/home/pacs/{{pac}}/users/{{user}}/mono-{{monoversion}}"
+      dest: "/home/pacs/{{pac}}/users/{{user}}/mono"
+      state: link      
