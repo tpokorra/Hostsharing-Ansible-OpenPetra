@@ -1,0 +1,4 @@
+DirectoryIndex index.html
+RewriteEngine on
+RewriteBase /
+RewriteRule ^(.*) http://127.0.0.1:{{httpport}}/$1 [proxy,last]

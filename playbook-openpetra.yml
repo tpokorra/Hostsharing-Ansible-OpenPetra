@@ -48,6 +48,36 @@
     file:
       path: "/home/pacs/{{pac}}/users/{{user}}/bin"
       state: directory
+  - name: create directory .mono
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+      path: "/home/pacs/{{pac}}/users/{{user}}/.mono"
+      state: directory
+  - name: create directory openpetra
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+      path: "/home/pacs/{{pac}}/users/{{user}}/openpetra"
+      state: directory
+  - name: create etc directory for instance
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+      path: "/home/pacs/{{pac}}/users/{{user}}/{{OP_CUSTOMER}}/etc"
+      state: directory
+  - name: create tmp directory for instance
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+      path: "/home/pacs/{{pac}}/users/{{user}}/{{OP_CUSTOMER}}/tmp"
+      state: directory
+  - name: create log directory for instance
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+      path: "/home/pacs/{{pac}}/users/{{user}}/{{OP_CUSTOMER}}/log"
+      state: directory
 
   #################################
   ## upload files
@@ -75,11 +105,11 @@
   - name: upload openpetra start script
     become: yes
     become_user: "{{pac}}-{{user}}"
-    template: dest="/home/pacs/{{pac}}/users/{{user}}/bin/start-openpetra.sh" src="templates/start-nginx.sh" mode=0700
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/bin/start-openpetra.sh" src="templates/start-openpetra.sh" mode=0700
   - name: upload openpetra stop script
     become: yes
     become_user: "{{pac}}-{{user}}"
-    template: dest="/home/pacs/{{pac}}/users/{{user}}/bin/stop-openpetra.sh" src="templates/stop-nginx.sh" mode=0700
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/bin/stop-openpetra.sh" src="templates/stop-openpetra.sh" mode=0700
   - name: upload monit configuration
     become: yes
     become_user: "{{pac}}-{{user}}"
@@ -95,7 +125,7 @@
   - name: install mono
     become: yes
     become_user: "{{pac}}-{{user}}"
-    ansible.builtin.unarchive:
+    unarchive:
       creates: /home/pacs/{{pac}}/users/{{user}}/mono-{{monoversion}}
       src: https://download.solidcharity.com/tarballs/tpokorra/mono/mono-{{monoversion}}.bin.debian10.tar.gz
       remote_src: yes
@@ -107,19 +137,113 @@
       src: "/home/pacs/{{pac}}/users/{{user}}/mono-{{monoversion}}"
       dest: "/home/pacs/{{pac}}/users/{{user}}/mono"
       state: link
-  # TODO get the certificates: cert-sync --user /etc/ssl/certs/ca-certificates.crt
-  # TODO install the mono config file in the current user with a reference to libsodium
+  - name: install the certificates
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      source /home/pacs/{{pac}}/users/{{user}}/mono/env.sh
+      cert-sync --user /etc/ssl/certs/ca-certificates.crt
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/"
+      creates: "/home/pacs/{{pac}}/users/{{user}}/.config/.mono/certs"
+  - name: copy mono config file
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    copy:
+      src: /home/pacs/{{pac}}/users/{{user}}/mono/etc/mono/config
+      dest: /home/pacs/{{pac}}/users/{{user}}/.mono/config
+      remote_src: yes
+      force: no # do not overwrite if the file already exists
+  - name: add configuration for libsodium
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    lineinfile:
+      path: "/home/pacs/{{pac}}/users/{{user}}/.mono/config"
+      regexp: '.*dllmap dll="libsodium".*'
+      line: '    <dllmap dll="libsodium" target="/usr/lib/x86_64-linux-gnu/libsodium.so.23" os="!windows"/>'
+      insertbefore: '</configuration>'
 
   #################################
   ## download OpenPetra
   #################################
-  # TODO get the tarball
-  # TODO set symbolic link for libsodium
+  - name: install openpetra
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    unarchive:
+      creates: /home/pacs/{{pac}}/users/{{user}}/openpetra/server/bin/version.txt
+      src: https://get.openpetra.org/latest
+      remote_src: yes
+      extra_opts: [--strip-components=1] # to avoid the openpetra directory to contain the version number
+      dest: /home/pacs/{{pac}}/users/{{user}}/openpetra
+  - name: create symbolic link for libsodium
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+      src: "/usr/lib/x86_64-linux-gnu/libsodium.so.23"
+      dest: "/home/pacs/{{pac}}/users/{{user}}/openpetra/server/bin/libsodium.so"
+      state: link
 
+  #####################################
+  ## create configuration for instance
+  #####################################
+  - name: upload openpetra server config
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/{{OP_CUSTOMER}}/etc/PetraServerConsole.config" src="templates/PetraServerConsole.config" mode=0600
+  - name: upload openpetra admin console config
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/{{OP_CUSTOMER}}/etc/PetraServerAdminConsole.config" src="templates/PetraServerAdminConsole.config" mode=0600
+  - name: upload nginx instance config
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/etc/nginx.{{OP_CUSTOMER}}.conf" src="templates/nginx.op_instance.conf" mode=0600
+  - name: upload apache instance .htaccess
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/doms/{{domain}}/htdocs-ssl/.htaccess" src="templates/htaccess" mode=0644
 
-# TODO: install instance
+  #####################################
+  ## download and install demo database
+  #####################################
+  - name: download demo database
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    get_url:
+      url: https://github.com/openpetra/demo-databases/raw/master/demoWith1ledger.yml.gz
+      dest: "/home/pacs/{{pac}}/users/{{user}}/demoWith1ledger.yml.gz"
+  - name: initialise the database
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      cd /home/pacs/{{pac}}/users/{{user}}
+      source mono/env.sh
+      export OP_CUSTOMER={{OP_CUSTOMER}}
+      export DO_NOT_CREATE_DATABASE=yes
+      openpetra/openpetra-server.sh initdb && touch .ansible.dbinitialised
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/"
+      creates: "/home/pacs/{{pac}}/users/{{user}}/.ansible.dbinitialised"
+  - name: load the demo database
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      cd /home/pacs/{{pac}}/users/{{user}}
+      source mono/env.sh
+      export OP_CUSTOMER={{OP_CUSTOMER}}
+      openpetra/openpetra-server.sh loadYmlGz /home/pacs/{{pac}}/users/{{user}}/demoWith1ledger.yml.gz && touch .ansible.loadeddemodb
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/"
+      creates: "/home/pacs/{{pac}}/users/{{user}}/.ansible.loadeddemodb"
+
+# TODO: apache .htaccess file
 # TODO: crontab for logrotate
 # TODO: crontab for monit
 # TODO: crontab for reminder
-# TODO: start openpetra, start nginx
 # TODO: start monit
+
+# TODO: wait a minute or two. see https://openpetra.example.org
+# TODO: Instructions for Updates
