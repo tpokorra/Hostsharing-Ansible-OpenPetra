@@ -1,3 +1,3 @@
 [openpetra]
 # important: subdomain must match OP_CUSTOMER!
-xyz00 ansible_ssh_host=xyz00.hostsharing.net ansible_ssh_user=xyz00 pac=xyz00 httpport=8001 monoport=4001 domain=openpetra.example.org OP_CUSTOMER=op_openpetra user=openpetra password=testpassw0rd!?
+xyz00 ansible_ssh_host=xyz00.hostsharing.net ansible_ssh_user=xyz00 pac=xyz00 httpport=8001 monoport=4001 domain=openpetra.example.org OP_CUSTOMER=op_openpetra user=openpetra password=testpassw0rd_changeme

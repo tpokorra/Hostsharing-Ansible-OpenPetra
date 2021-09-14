@@ -141,7 +141,7 @@
     become: yes
     become_user: "{{pac}}-{{user}}"
     shell: |
-      source /home/pacs/{{pac}}/users/{{user}}/mono/env.sh
+      source mono/env.sh
       cert-sync --user /etc/ssl/certs/ca-certificates.crt
     args:
       executable: /bin/bash
@@ -217,7 +217,6 @@
     become: yes
     become_user: "{{pac}}-{{user}}"
     shell: |
-      cd /home/pacs/{{pac}}/users/{{user}}
       source mono/env.sh
       export OP_CUSTOMER={{OP_CUSTOMER}}
       export DO_NOT_CREATE_DATABASE=yes
@@ -230,7 +229,6 @@
     become: yes
     become_user: "{{pac}}-{{user}}"
     shell: |
-      cd /home/pacs/{{pac}}/users/{{user}}
       source mono/env.sh
       export OP_CUSTOMER={{OP_CUSTOMER}}
       openpetra/openpetra-server.sh loadYmlGz /home/pacs/{{pac}}/users/{{user}}/demoWith1ledger.yml.gz && touch .ansible.loadeddemodb
@@ -239,11 +237,19 @@
       chdir: "/home/pacs/{{pac}}/users/{{user}}/"
       creates: "/home/pacs/{{pac}}/users/{{user}}/.ansible.loadeddemodb"
 
-# TODO: apache .htaccess file
 # TODO: crontab for logrotate
 # TODO: crontab for monit
 # TODO: crontab for reminder
-# TODO: start monit
+
+  - name: start monit
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      /usr/bin/monit -c ".monitrc"
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/"
+      creates: "/home/pacs/{{pac}}/users/{{user}}/var/run/monit.id"
 
 # TODO: wait a minute or two. see https://openpetra.example.org
 # TODO: Instructions for Updates
