@@ -65,6 +65,7 @@ function hsdatabase(args) {
       }
       catch (e) {
         print('{"failed":true,"msg":"' + String(e) + '"}');
+        return;
       }
     } else {
       try {
@@ -72,11 +73,13 @@ function hsdatabase(args) {
       }
       catch (e) {
         print('{"failed":true,"msg":"' + String(e) + '"}');
+        return;
       }
     }
     if (existingDBs.length < 1) {
       try {
         dbmodule.add({set:{name:databasename,owner:databasename}});
+        dbmodule.update({where:{name:databasename},set:{owner:databasename}});
         print('{"changed":true,"msg":"added"}');
       }
       catch (e) {
