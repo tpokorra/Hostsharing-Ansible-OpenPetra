@@ -34,5 +34,14 @@ Now we can reach our site via:
 
     https://openpetra.example.org
 
+Please use the user `demo` with password `demo`, or use the user `sysadmin` with password `CHANGEME`.
+
+IMPORTANT: please change both passwords as soon as possible! see https://docs.openpetra.org/howtos/initial-instance-setup.html
+
+We have installed a demo database with data already, so that you don't need to setup the ledger etc.
+If you want to load a base database, follow the instructions at https://docs.openpetra.org/howtos/reset-database.html
+
+For updates, please run: TODO
+
 --- Open Source Hosting ---
  https://www.hostsharing.net

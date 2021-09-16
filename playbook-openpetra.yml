@@ -276,6 +276,3 @@
       executable: /bin/bash
       chdir: "/home/pacs/{{pac}}/users/{{user}}/"
       creates: "/home/pacs/{{pac}}/users/{{user}}/var/run/monit.id"
-
-# TODO: wait a minute or two. see https://openpetra.example.org and login with demo/demo or sysadmin/CHANGEME
-# TODO: Instructions for Updates
