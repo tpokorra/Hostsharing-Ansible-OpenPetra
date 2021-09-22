@@ -110,6 +110,10 @@
     become: yes
     become_user: "{{pac}}-{{user}}"
     template: dest="/home/pacs/{{pac}}/users/{{user}}/bin/stop-openpetra.sh" src="templates/stop-openpetra.sh" mode=0700
+  - name: upload openpetra upgrade script
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/bin/upgrade-openpetra.sh" src="templates/upgrade-openpetra.sh" mode=0700
   - name: upload monit configuration
     become: yes
     become_user: "{{pac}}-{{user}}"
@@ -118,6 +122,10 @@
     become: yes
     become_user: "{{pac}}-{{user}}"
     template: dest="/home/pacs/{{pac}}/users/{{user}}/.logrotate" src="templates/logrotate" mode=0600
+  - name: upload profile
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/.profile" src="templates/profile" mode=0644
 
   #################################
   ## install mono

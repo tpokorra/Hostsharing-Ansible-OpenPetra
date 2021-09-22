@@ -41,7 +41,9 @@ IMPORTANT: please change both passwords as soon as possible! see https://docs.op
 We have installed a demo database with data already, so that you don't need to setup the ledger etc.
 If you want to load a base database, follow the instructions at https://docs.openpetra.org/howtos/reset-database.html
 
-For updates, please run the script which is available at https://wiki.hostsharing.net/index.php?title=OpenPetra_installieren#Updates
+For updates, please run the script:
+
+    $ bin/upgrade-openpetra.sh
 
 --- Open Source Hosting ---
  https://www.hostsharing.net

@@ -1,0 +1,4 @@
+cd $HOME
+export OP_CUSTOMER={{OP_CUSTOMER}}
+. mono/env.sh
+
