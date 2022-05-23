@@ -14,3 +14,5 @@ openpetra:
 
       httpport: 8001
       monoport: 4001
+
+      with_demo_db: True
