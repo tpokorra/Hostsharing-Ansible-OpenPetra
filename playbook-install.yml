@@ -15,6 +15,10 @@
   - name: setup database
     hsdatabase.js: name="{{pac}}_{{user}}" password="{{password}}" instance="mysql" exists="true"
 
+  - name: Sleep to avoid issue invalid user for temporary files
+    pause:
+      seconds: 10
+
   #################################
   ## create directories
   #################################
