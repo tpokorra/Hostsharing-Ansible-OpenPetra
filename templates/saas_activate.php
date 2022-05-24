@@ -19,7 +19,8 @@ if (empty($USER_EMAIL_ADDRESS)) {
 try {
     # enable the administrator user, and set the email address
     $pdo = new PDO('mysql:host=localhost;dbname={{pac}}_{{user}}', '{{pac}}_{{user}}', '{{password}}');
-    $stmtUpdate = $pdo->prepare("UPDATE s_user SET s_account_locked_l=0, s_failed_logins_i=0, s_email_address_c=?, created_at=NOW(), updated_at=NOW() WHERE login=? AND s_account_locked_l=1");
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $stmtUpdate = $pdo->prepare("UPDATE s_user SET s_account_locked_l=0, s_failed_logins_i=0, s_email_address_c=?, s_date_created_d=NOW(), s_date_modified_d=NOW() WHERE s_user_id_c=? AND s_account_locked_l=1");
     $stmtUpdate->execute([$USER_EMAIL_ADDRESS, 'SYSADMIN']);
 }
 catch (Exception $e) {

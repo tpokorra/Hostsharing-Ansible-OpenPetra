@@ -22,6 +22,7 @@ if (!is_run_from_cli()) {
 
 try {
     $pdo = new PDO('mysql:host=localhost;dbname={{pac}}_{{user}}', '{{pac}}_{{user}}', '{{password}}');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     # lock all users permanently
     $stmtUpdate = $pdo->prepare("UPDATE s_user SET s_account_locked_l=1");
     $stmtUpdate->execute();
