@@ -8,7 +8,7 @@ openpetra:
       user: {{username}}
       password: {{password}}
 
-      OP_CUSTOMER: op_{{user}}
+      OP_CUSTOMER: op_{{identifier}}
 
       httpport: {{port1}}
       monoport: {{port2}}

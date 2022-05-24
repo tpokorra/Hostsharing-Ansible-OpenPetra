@@ -241,7 +241,7 @@
     get_url:
       url: https://github.com/openpetra/demo-databases/raw/master/demoWith1ledger.yml.gz
       dest: "/home/pacs/{{pac}}/users/{{user}}/demoWith1ledger.yml.gz"
-    when: with_demo_db = True
+    when: with_demo_db
 
   - name: load the demo database
     become: yes
@@ -254,7 +254,7 @@
       executable: /bin/bash
       chdir: "/home/pacs/{{pac}}/users/{{user}}/"
       creates: "/home/pacs/{{pac}}/users/{{user}}/.ansible.loadeddemodb"
-    when: with_demo_db = True
+    when: with_demo_db
 
   ####################################
   ## install cron jobs
