@@ -15,4 +15,10 @@ openpetra:
       httpport: 8001
       monoport: 4001
 
+      smtp_from: noreply@example.org
+      smtp_host: smtp.example.org
+      smtp_port: "4025"
+      smtp_user: invalid
+      smtp_pwd: topsecret
+
       with_demo_db: True

@@ -13,6 +13,12 @@ openpetra:
       httpport: {{port1}}
       monoport: {{port2}}
 
+      smtp_from: {{smtp_from}}
+      smtp_host: {{smtp_host}}
+      smtp_port: {{smtp_port}}
+      smtp_user: {{smtp_user}}
+      smtp_pwd: {{smtp_pwd}}
+
       with_demo_db: False
 
       SaasActivationPassword: {{SaasActivationPassword}}
