@@ -256,6 +256,19 @@
       creates: "/home/pacs/{{pac}}/users/{{user}}/.ansible.loadeddemodb"
     when: with_demo_db
 
+  - name: load the base database
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      source mono/env.sh
+      export OP_CUSTOMER={{OP_CUSTOMER}}
+      openpetra/openpetra-server.sh loadYmlGz /home/pacs/{{pac}}/users/{{user}}/openpetra/db/base.yml.gz && touch .ansible.loadedbasedb
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/"
+      creates: "/home/pacs/{{pac}}/users/{{user}}/.ansible.loadedbasedb"
+    when: not with_demo_db
+
   ####################################
   ## install cron jobs
   ####################################
