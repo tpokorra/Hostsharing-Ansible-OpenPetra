@@ -1,0 +1,28 @@
+---
+- hosts: openpetra
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  tasks:
+  - name: upload update-certs script
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/bin/update-certs.sh" src="templates/update-certs.sh" mode=0700
+
+  - name: install the certificates
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      ./update-certs.sh || exit -1
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/bin/"
+
+  - name: update openpetra binaries
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    shell: |
+      ./upgrade-openpetra.sh || exit -1
+    args:
+      executable: /bin/bash
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/bin/"

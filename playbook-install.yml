@@ -118,6 +118,10 @@
     become: yes
     become_user: "{{pac}}-{{user}}"
     template: dest="/home/pacs/{{pac}}/users/{{user}}/bin/upgrade-openpetra.sh" src="templates/upgrade-openpetra.sh" mode=0700
+  - name: upload update-certs script
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/bin/update-certs.sh" src="templates/update-certs.sh" mode=0700
   - name: upload monit configuration
     become: yes
     become_user: "{{pac}}-{{user}}"
@@ -153,11 +157,10 @@
     become: yes
     become_user: "{{pac}}-{{user}}"
     shell: |
-      source mono/env.sh
-      cert-sync --user /etc/ssl/certs/ca-certificates.crt
+      ./update-certs.sh || exit -1
     args:
       executable: /bin/bash
-      chdir: "/home/pacs/{{pac}}/users/{{user}}/"
+      chdir: "/home/pacs/{{pac}}/users/{{user}}/bin/"
       creates: "/home/pacs/{{pac}}/users/{{user}}/.config/.mono/certs"
   - name: copy mono config file
     become: yes
