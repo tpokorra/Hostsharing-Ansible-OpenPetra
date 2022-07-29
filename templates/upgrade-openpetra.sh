@@ -18,7 +18,7 @@ for f in openpetra-*; do
 done
 tar xzf ~/tmp/openpetra-latest.tar.gz
 rm -f ~/tmp/openpetra-latest.tar.gz
-rm openpetra
+rm -Rf openpetra
 for f in openpetra-*; do
     if [ -d $f ]; then
       ln -s $f openpetra
