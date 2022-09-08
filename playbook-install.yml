@@ -114,6 +114,10 @@
     become: yes
     become_user: "{{pac}}-{{user}}"
     template: dest="/home/pacs/{{pac}}/users/{{user}}/bin/stop-openpetra.sh" src="templates/stop-openpetra.sh" mode=0700
+  - name: upload openpetra restart script
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    template: dest="/home/pacs/{{pac}}/users/{{user}}/bin/restart.sh" src="templates/restart.sh" mode=0700
   - name: upload openpetra upgrade script
     become: yes
     become_user: "{{pac}}-{{user}}"
