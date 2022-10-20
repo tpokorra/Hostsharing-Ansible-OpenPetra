@@ -269,7 +269,7 @@
     shell: |
       source mono/env.sh
       export OP_CUSTOMER={{OP_CUSTOMER}}
-      openpetra/openpetra-server.sh loadYmlGz /home/pacs/{{pac}}/users/{{user}}/openpetra/db/clear.yml.gz && touch .ansible.loadedcleandb
+      openpetra/openpetra-server.sh loadYmlGz /home/pacs/{{pac}}/users/{{user}}/openpetra/db/clean.yml.gz && touch .ansible.loadedcleandb
     args:
       executable: /bin/bash
       chdir: "/home/pacs/{{pac}}/users/{{user}}/"
