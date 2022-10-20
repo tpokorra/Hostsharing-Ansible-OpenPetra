@@ -82,6 +82,12 @@
     file:
       path: "/home/pacs/{{pac}}/users/{{user}}/{{OP_CUSTOMER}}/log"
       state: directory
+  - name: create backup directory for instance
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    file:
+      path: "/home/pacs/{{pac}}/users/{{user}}/{{OP_CUSTOMER}}/backup"
+      state: directory
 
   #################################
   ## upload files
@@ -302,6 +308,14 @@
       minute: "27"
       hour: "1"
       job: "(source $HOME/mono/env.sh && $HOME/openpetra/openpetra-server.sh reminderAll) >/dev/null 2>&1"
+  - name: run OpenPetra backup each night
+    become: yes
+    become_user: "{{pac}}-{{user}}"
+    cron:
+      name: "OpenPetra backup"
+      minute: "45"
+      hour: "1"
+      job: "(source $HOME/mono/env.sh && $HOME/openpetra/openpetra-server.sh backup) >/dev/null 2>&1"
 
   ##################################################
   ## start nginx and openpetra services via monit
