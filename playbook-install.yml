@@ -314,7 +314,7 @@
     cron:
       name: "OpenPetra backup"
       minute: "15"
-      job: /bin/bash -c "source OP_CUSTOMER={{OP_CUSTOMER}} && source $HOME/mono/env.sh && $HOME/openpetra/openpetra-server.sh backupall" >/dev/null 2>&1
+      job: /bin/bash -c "export OP_CUSTOMER={{OP_CUSTOMER}} && source $HOME/mono/env.sh && $HOME/openpetra/openpetra-server.sh backupall" >/dev/null 2>&1
 
   ##################################################
   ## start nginx and openpetra services via monit
